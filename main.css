@@ -1,0 +1,94 @@
+#contenedorJuego{
+    height: 500px;
+    width: 100%;
+    background-color: aqua;
+    position: relative;
+    z-index: -1000;
+    overflow: hidden;
+}
+#nubes{
+    position: absolute;
+    top: 0;
+    z-index: -50;
+    height: 300px;
+    width: 100%;
+    background-image: url('images/world/background/Clouds_3.png');
+    animation: movimientoNubes 30s linear infinite;
+}
+@keyframes movimientoNubes{
+    100%{
+        background-position-x: -800px;
+    }
+}
+#montanias{
+    position: absolute;
+    bottom: 0;
+    z-index: -40;
+    height: 500px;
+    width: 100%;
+    background-image: url('images/world/background/montanias.png');
+    animation: movimientoMontanias 15s linear infinite;
+}
+@keyframes movimientoMontanias{
+    100%{
+        background-position-x: -1024px;
+    }
+}
+#pasto{
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+    height: 50px;
+    width: 100%;
+    background-image: url('images/world/background/pasto2.png');
+    animation: movimientoMontanias 0.1s linear infinite;
+}
+@keyframes movimientoPasto{
+    100%{
+        background-position-x: -455px;
+    }
+}
+#protagonista{
+    position: absolute;
+    z-index: 0;
+    height: 130px;
+    width: 94px;
+    
+    left: 1%;
+    bottom: 0px;
+}
+.corriendo{
+    background-size: 940px 130px !important;
+    background: url('images/characters/main/running.png') left center;
+    animation: runningAnimation 0.3s steps(10) infinite;
+}
+@keyframes runningAnimation{
+    100%{
+        background-position: -940px;
+    }
+}
+.saltando{
+    background-size: 470px 130px !important;
+    background: url('images/characters/main/jumping.png') left center;
+    animation: jumpingFallingAnimation 0.2s steps(4);
+    animation-fill-mode: forwards;
+}
+.cayendo{
+    background-size: 470px 130px !important;
+    background: url('images/characters/main/falling.png') left center;
+    animation: jumpingFallingAnimation 0.2s steps(4);
+    animation-fill-mode: forwards;
+}
+@keyframes jumpingFallingAnimation{
+    100%{
+        background-position: -376px;
+    }
+}
+
+
+#nubes{
+
+}
+#montanias{
+
+}
