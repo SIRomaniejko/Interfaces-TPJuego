@@ -54,7 +54,7 @@
     height: 130px;
     width: 94px;
     
-    left: 1%;
+    left: 5px;
     bottom: 0px;
 }
 .corriendo{
@@ -70,25 +70,35 @@
 .saltando{
     background-size: 470px 130px !important;
     background: url('images/characters/main/jumping.png') left center;
-    animation: jumpingFallingAnimation 0.2s steps(4);
+    animation: jumpingFallingAnimation 0.5s steps(4);
     animation-fill-mode: forwards;
 }
 .cayendo{
     background-size: 470px 130px !important;
     background: url('images/characters/main/falling.png') left center;
-    animation: jumpingFallingAnimation 0.2s steps(4);
+    animation: jumpingFallingAnimation 2s steps(4);
     animation-fill-mode: forwards;
 }
 @keyframes jumpingFallingAnimation{
+    0%{
+        background-position-x: 0;
+    }
     100%{
-        background-position: -376px;
+        background-position-x: -376px;
     }
 }
 
-
-#nubes{
-
+.atacando{
+    width: 137px !important;
+    background: url('images/characters/main/Attack__005.png');
+    background-size: 137px 130px !important;
 }
-#montanias{
-
+.proyectil{
+    position: absolute;
+    background: black;
+    z-index: 20;
+    width: 20px;
+    height: 20px;
+    left: 800px;
+    bottom: 300px;
 }
