@@ -8,6 +8,7 @@ class Protagonista{
         this.attacking = -10;
         this.attackSpeed = attackSpeed;
         this.attackDuration = attackDuration;
+        this.isAttackResetted = false;
     }
     isOnFloor(){
         return this.altura == 0;
@@ -49,6 +50,9 @@ class Protagonista{
     attack(){
         this.attacking = this.attackDuration;
     }
+    attackReset(){
+        this.isAttackResetted = true;
+    }
     update(){
         if(!this.isAttacking()){
             this.getDomElement().classList.remove("atacando");
@@ -75,6 +79,11 @@ class Protagonista{
         this.getDomElement().style.bottom = main.getAltura() + "px";
         this.calcularAltura();
         this.attacking--;
+        console.log(this.isAttackResetted);
+        if(this.attacking <= 0 && this.isAttackResetted){
+            this.attacking = -this.attackSpeed;
+            this.isAttackResetted = false;
+        }
     }
     getHitbox(){
         return {x1 : 5,
@@ -87,13 +96,14 @@ class Protagonista{
 class Proyectil{
     constructor(domElement, velocidadY, velocidadX){
         this.domElement = domElement;
+        this.domElement.style.background = "red";
         this.velocidadY = velocidadY;
         this.velocidadX = velocidadX;
         this.posX = 1500;
         this.posY = 250;
     }
     update(){
-        this.domElement.style.background = "red";
+        
         this.posX -= this.velocidadX;
         this.posY -= this.velocidadY;
         this.domElement.style.left = this.posX + "px";
@@ -102,7 +112,11 @@ class Proyectil{
     isUsable(){
         return this.posX < 0 || this.posY < 0;
     }
+    dedTest(){
+        this.domElement.style.background = "green";
+    }
     reset(velocidadY, velocidadX){
+        this.domElement.style.background = "red";
         this.velocidadY = velocidadY;
         this.velocidadX = velocidadX;
         this.posX = 1500;
@@ -192,7 +206,8 @@ function tick(){
         let hitBoxProyectil = proyectil.getHitbox();
         if(areColliding(hitBoxMain, hitBoxProyectil)){
             if(main.isAttacking()){
-                console.log("destroyed");
+                proyectil.dedTest();
+                main.attackReset();
             }
             else{
                 console.log("u ded");
@@ -215,19 +230,20 @@ function areColliding(hitBoxA, hitBoxB){
 
 function spawnProyectil(probabilidad){
     if(Math.random() < probabilidad){
-        let velocidadX = Math.random()*6 + 1;
+        let velocidadX = Math.random()*6 + 3;
         let velocidadY = (Math.random() * (velocidadX/2)) - (velocidadX/4);
         for(let x = 0; x < proyectiles.length; x++){
             if(proyectiles[x].isUsable()){
                 proyectiles[x].reset(velocidadY, velocidadX);
-                proyectiles[x].domElement.style.background = "green";
                 return;
             }
         }
         let proyectilNuevo = document.createElement("div");
         proyectilNuevo.classList.add("proyectil");
+        let newProyectil = new Proyectil(proyectilNuevo, velocidadY, velocidadX);
+        newProyectil.update();
         document.querySelector("#contenedorJuego").appendChild(proyectilNuevo);
-        proyectiles.push(new Proyectil(proyectilNuevo, velocidadY, velocidadX));
+        proyectiles.push(newProyectil);
     }
 }
 setInterval(tick, tickInterval);
