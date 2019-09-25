@@ -89,8 +89,8 @@ class Proyectil{
         this.domElement = domElement;
         this.velocidadY = velocidadY;
         this.velocidadX = velocidadX;
-        this.posX = 800;
-        this.posY = 300;
+        this.posX = 1500;
+        this.posY = 250;
     }
     update(){
         this.domElement.style.background = "red";
@@ -98,6 +98,15 @@ class Proyectil{
         this.posY -= this.velocidadY;
         this.domElement.style.left = this.posX + "px";
         this.domElement.style.bottom = this.posY + "px";
+    }
+    isUsable(){
+        return this.posX < 0 || this.posY < 0;
+    }
+    reset(velocidadY, velocidadX){
+        this.velocidadY = velocidadY;
+        this.velocidadX = velocidadX;
+        this.posX = 1500;
+        this.posY = 250;
     }
     getHitbox(){
         return {
@@ -108,17 +117,18 @@ class Proyectil{
         }
     }
 }
-let test = document.querySelector("#protagonista");
-console.log(test);
 
 //parametros importantes
+
 let saltoSpeed = 18;
 let gravity = -1;
 let attackSpeed = 20;
 let attackDuration = 5;
-let main = new Protagonista(test, attackSpeed, attackDuration);
-
-let sprite = document.querySelector("#testSprite");
+let tickInterval = 25;
+let probabilidadSpawnProyectil = 0.008;
+let crecimientoProbabilidad = 0.000005;
+let main = new Protagonista(document.querySelector("#protagonista"), attackSpeed, attackDuration);
+let proyectiles = [];
 let downKey = false;
 let upKey = false;
 let spaceKey = false;
@@ -148,7 +158,6 @@ document.addEventListener("keydown", event=>{
         upKey = false;
     }
 })*/
-let proyectil = new Proyectil(document.querySelector(".proyectil"), 3, 8);
 function tick(){
     if(!main.isOnFloor()){
         main.changeVelocidadY(gravity);
@@ -162,27 +171,37 @@ function tick(){
         main.setVelocidadY(saltoSpeed);
         main.setDoubleJump(true);
     }
+    if(downKey && !main.isOnFloor()){
+        main.setVelocidadY(-saltoSpeed);
+    }
     if(spaceKey){
         if(main.canAttack()){
             main.attack();
         }
     }
     main.update();
-    proyectil.update();
+    proyectiles.forEach(proyectil=>{
+        proyectil.update();
+    })
     downKey = false;
     upKey = false;
     spaceKey = false;
+
     let hitBoxMain = main.getHitbox();
-    let hitBoxTest = proyectil.getHitbox();
-    if(areColliding(hitBoxMain, hitBoxTest)){
-        if(main.isAttacking()){
-            console.log("destroyed");
+    proyectiles.forEach(proyectil =>{
+        let hitBoxProyectil = proyectil.getHitbox();
+        if(areColliding(hitBoxMain, hitBoxProyectil)){
+            if(main.isAttacking()){
+                console.log("destroyed");
+            }
+            else{
+                console.log("u ded");
+            }
         }
-        else{
-            console.log("u ded");
-        }
-    }
-    ;
+    })
+    probabilidadSpawnProyectil += crecimientoProbabilidad;
+    spawnProyectil(probabilidadSpawnProyectil);
+    
 }
 function areColliding(hitBoxA, hitBoxB){
     return (!(hitBoxB.y1 > hitBoxA.y2) && !(hitBoxB.y2 < hitBoxA.y1) && !(hitBoxB.x1 > hitBoxA.x2) && !(hitBoxB.x2 < hitBoxA.x1));
@@ -193,7 +212,25 @@ function areColliding(hitBoxA, hitBoxB){
         //console.log("collideX");
     }*/
 }
-setInterval(tick,25);
+
+function spawnProyectil(probabilidad){
+    if(Math.random() < probabilidad){
+        let velocidadX = Math.random()*6 + 1;
+        let velocidadY = (Math.random() * (velocidadX/2)) - (velocidadX/4);
+        for(let x = 0; x < proyectiles.length; x++){
+            if(proyectiles[x].isUsable()){
+                proyectiles[x].reset(velocidadY, velocidadX);
+                proyectiles[x].domElement.style.background = "green";
+                return;
+            }
+        }
+        let proyectilNuevo = document.createElement("div");
+        proyectilNuevo.classList.add("proyectil");
+        document.querySelector("#contenedorJuego").appendChild(proyectilNuevo);
+        proyectiles.push(new Proyectil(proyectilNuevo, velocidadY, velocidadX));
+    }
+}
+setInterval(tick, tickInterval);
 
 
 
