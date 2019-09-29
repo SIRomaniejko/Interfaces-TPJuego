@@ -1,7 +1,7 @@
 class Protagonista{
-    constructor(domElement, attackSpeed, attackDuration){
+    constructor(domElement, leftDistance, attackSpeed, attackDuration, hitBoxCorriendo, hitboxNormaltacando){
         this.domElement = domElement;
-        this.height = this.domElement.offsetHeight;
+        this.domElement.style.left = leftDistance + "px";
         this.velocidadY = 0;
         this.altura = 0;
         this.doubleJump = false;
@@ -9,6 +9,36 @@ class Protagonista{
         this.attackSpeed = attackSpeed;
         this.attackDuration = attackDuration;
         this.isAttackResetted = false;
+        this.isAlive = true;
+        this.hitboxCorriendo = hitBoxCorriendo;
+        this.hitboxNormaltacando = hitboxNormaltacando;
+        this.leftDistance = leftDistance;
+        this.generateHitboxDom();
+    }
+    generateHitboxDom(){
+        let hitboxNormal = document.createElement("div");
+        let hitboxNormaltaque = document.createElement("div");
+        hitboxNormal.classList.add("hitbox");
+        hitboxNormaltaque.classList.add("hitbox");
+        if(!verHitboxes){
+            hitboxNormal.classList.add("ocultado");
+            hitboxNormaltaque.classList.add("ocultado");
+        }
+        hitboxNormal.style.height = this.hitboxCorriendo.y2 + "px";
+        hitboxNormal.style.width = this.hitboxCorriendo.x2 + "px";
+        hitboxNormal.style.position = "absolute";
+        hitboxNormal.style.left = this.hitboxCorriendo.x1 + "px";
+        hitboxNormal.style.bottom = this.hitboxCorriendo.y1 + "px";
+        this.domElement.appendChild(hitboxNormal)
+        hitboxNormaltaque.style.height = this.hitboxNormaltacando.y2 + "px";
+        hitboxNormaltaque.style.width = this.hitboxNormaltacando.x2 + "px";
+        hitboxNormaltaque.style.position = "absolute";
+        hitboxNormaltaque.style.left = this.hitboxNormaltacando.x1 + "px";
+        hitboxNormaltaque.style.bottom = this.hitboxNormaltacando.y1 + "px";
+        hitboxNormaltaque.style.background = "green";
+        hitboxNormaltaque.style.zIndex = "-1";
+        this.domElement.appendChild(hitboxNormaltaque);
+
     }
     isOnFloor(){
         return this.altura == 0;
@@ -54,69 +84,109 @@ class Protagonista{
         this.isAttackResetted = true;
     }
     update(){
-        if(!this.isAttacking()){
+        
+        if(!this.isAlive){
             this.getDomElement().classList.remove("atacando");
-        }
-        if(this.getVelocidadY() > 0){
             this.getDomElement().classList.remove("corriendo");
             this.getDomElement().classList.remove("cayendo");
-            this.getDomElement().classList.add("saltando");
-        }
-        else if(this.getVelocidadY() < 0){
             this.getDomElement().classList.remove("saltando");
-            this.getDomElement().classList.add("cayendo");
+            this.getDomElement().classList.add("muerto");
         }
-        else if(!this.getDomElement().classList.contains("corriendo") && main.isOnFloor()){
-            this.getDomElement().classList.remove("cayendo");
-            this.getDomElement().classList.add("corriendo");
-        }
-        if(this.isAttacking()){
-            this.getDomElement().classList.remove("saltando");
-            this.getDomElement().classList.remove("cayendo");
-            this.getDomElement().classList.remove("corriendo");
-            this.getDomElement().classList.add("atacando");
+        else{
+
+            if(!this.isAttacking()){
+                this.getDomElement().classList.remove("atacando");
+            }
+            if(this.getVelocidadY() > 0){
+                this.getDomElement().classList.remove("corriendo");
+                this.getDomElement().classList.remove("cayendo");
+                this.getDomElement().classList.add("saltando");
+            }
+            else if(this.getVelocidadY() < 0){
+                this.getDomElement().classList.remove("saltando");
+                this.getDomElement().classList.add("cayendo");
+            }
+            else if(!this.getDomElement().classList.contains("corriendo") && main.isOnFloor()){
+                this.getDomElement().classList.remove("cayendo");
+                this.getDomElement().classList.add("corriendo");
+            }
+            if(this.isAttacking()){
+                this.getDomElement().classList.remove("saltando");
+                this.getDomElement().classList.remove("cayendo");
+                this.getDomElement().classList.remove("corriendo");
+                this.getDomElement().classList.add("atacando");
+            }
         }
         this.getDomElement().style.bottom = main.getAltura() + "px";
         this.calcularAltura();
         this.attacking--;
-        console.log(this.isAttackResetted);
         if(this.attacking <= 0 && this.isAttackResetted){
             this.attacking = -this.attackSpeed;
             this.isAttackResetted = false;
         }
     }
     getHitbox(){
-        return {x1 : 5,
-                x2 : this.domElement.offsetWidth,
-                y1 : this.altura,
-                y2 : this.altura + this.height
-        };
+        let selectedHitbox;
+        if(this.isAttacking()){
+            selectedHitbox = this.hitboxNormaltacando
+        }
+        else{
+            selectedHitbox = this.hitboxCorriendo;
+        }
+        return {x1: this.leftDistance + selectedHitbox.x1,
+                x2: this.leftDistance + selectedHitbox.x1 + selectedHitbox.x2,
+                y1: this.altura + selectedHitbox.y1,
+                y2: this.altura + selectedHitbox.y1 + selectedHitbox.y2
+        }
+    }
+
+    die(){
+        this.isAlive = false;
     }
 }
 class Proyectil{
-    constructor(domElement, velocidadY, velocidadX){
+    constructor(domElement, velocidadY, velocidadX, hitbox){
         this.domElement = domElement;
-        this.domElement.style.background = "red";
         this.velocidadY = velocidadY;
         this.velocidadX = velocidadX;
         this.posX = 1500;
         this.posY = 250;
+        this.isDestroyed = false;
+        this.hitbox = hitbox;
+        this.setHitbox();
+    }
+    setHitbox(){
+        let hitbox = document.createElement("div");
+        hitbox.classList.add("hitbox");
+        if(!verHitboxes){
+            hitbox.classList.add("ocultado");
+
+        }
+        hitbox.style.height  = this.hitbox.y2 + "px";
+        hitbox.style.width  = this.hitbox.x2 + "px";
+        hitbox.style.left = this.hitbox.x1 + "px";
+        hitbox.style.bottom = this.hitbox.y1 + "px";
+        this.domElement.appendChild(hitbox);
     }
     update(){
-        
         this.posX -= this.velocidadX;
         this.posY -= this.velocidadY;
         this.domElement.style.left = this.posX + "px";
         this.domElement.style.bottom = this.posY + "px";
     }
-    isUsable(){
-        return this.posX < 0 || this.posY < 0;
+    isReusable(){
+        return this.posX < -50 || this.posY < -50;
     }
-    dedTest(){
-        this.domElement.style.background = "green";
+    isAlive(){
+        return !this.isDestroyed;
+    }
+    destroyProyectile(){
+        this.domElement.classList.add("ocultado");
+        this.isDestroyed = true;
     }
     reset(velocidadY, velocidadX){
-        this.domElement.style.background = "red";
+        this.isDestroyed = false;
+        this.domElement.classList.remove("ocultado");
         this.velocidadY = velocidadY;
         this.velocidadX = velocidadX;
         this.posX = 1500;
@@ -124,28 +194,51 @@ class Proyectil{
     }
     getHitbox(){
         return {
-            x1 : this.posX,
-            x2 : this.posX + 20,
-            y1 : this.posY,
-            y2 : this.posY + 20,
+            x1 : this.posX + this.hitbox.x1,
+            x2 : this.posX + this.hitbox.x1 + this.hitbox.x2,
+            y1 : this.posY + this.hitbox.y1,
+            y2 : this.posY + this.hitbox.y1 + this.hitbox.y2,
         }
     }
 }
 
 //parametros importantes
-
+let hitboxNormal = { x1 : 30,
+                x2 : 50,
+                y1 : 20,
+                y2 : 80,
+};
+let hitboxAtaque = { x1 : 0,
+                x2 : 140,
+                y1 : 0,
+                y2 : 135,
+};
+let hitBoxProyectil = { x1 : 4,
+                        x2 : 18,
+                        y1 : 4,
+                        y2 : 18,
+};
 let saltoSpeed = 18;
 let gravity = -1;
 let attackSpeed = 20;
 let attackDuration = 5;
 let tickInterval = 25;
-let probabilidadSpawnProyectil = 0.008;
-let crecimientoProbabilidad = 0.000005;
-let main = new Protagonista(document.querySelector("#protagonista"), attackSpeed, attackDuration);
-let proyectiles = [];
+let probabilidadSpawnProyectil = 0.01;
+let probabilidadSpawnProyectilActual = probabilidadSpawnProyectil;
+let crecimientoProbabilidad = 0.00001;
 let downKey = false;
 let upKey = false;
 let spaceKey = false;
+let verHitboxes = false;
+let main = new Protagonista(document.querySelector("#protagonista"), 5, attackSpeed, attackDuration, hitboxNormal, hitboxAtaque);
+let proyectiles = [];
+let combo = 0;
+let score = 0;
+let puntosDestruccion = 100;
+
+let comboDom = document.querySelector("#js-combo");
+let scoreDom = document.querySelector("#js-score");
+
 document.addEventListener("keydown", event=>{
     if(!event.repeat){
         switch(event.code){
@@ -175,18 +268,21 @@ document.addEventListener("keydown", event=>{
 function tick(){
     if(!main.isOnFloor()){
         main.changeVelocidadY(gravity);
+        if(downKey){
+            main.setVelocidadY(-saltoSpeed);
+        }
     }
-    if(upKey && main.isOnFloor()){
-        main.setVelocidadY(saltoSpeed);
-        upKey = false;
-        main.setDoubleJump(false);
+    if(main.isOnFloor()){
+        if(upKey){
+            main.setVelocidadY(saltoSpeed);
+            upKey = false;
+            main.setDoubleJump(false);
+        }
+        combo = 0;
     }
     if(upKey && !main.isDoubleJumping()){
         main.setVelocidadY(saltoSpeed);
         main.setDoubleJump(true);
-    }
-    if(downKey && !main.isOnFloor()){
-        main.setVelocidadY(-saltoSpeed);
     }
     if(spaceKey){
         if(main.canAttack()){
@@ -203,27 +299,43 @@ function tick(){
 
     let hitBoxMain = main.getHitbox();
     proyectiles.forEach(proyectil =>{
-        let hitBoxProyectil = proyectil.getHitbox();
-        if(areColliding(hitBoxMain, hitBoxProyectil)){
-            if(main.isAttacking()){
-                proyectil.dedTest();
-                main.attackReset();
-            }
-            else{
-                console.log("u ded");
+        if(proyectil.isAlive() && !proyectil.isReusable()){
+            let hitBoxProyectil = proyectil.getHitbox();
+            if(areColliding(hitBoxMain, hitBoxProyectil)){
+                if(main.isAttacking()){
+                    console.log("cut");
+                    proyectil.destroyProyectile();
+                    main.attackReset();
+                    main.setDoubleJump(false);
+                    score += puntosDestruccion * ++combo;
+                }
+                else{
+                    proyectil.destroyProyectile();
+                    main.die();
+                }
             }
         }
     })
-    probabilidadSpawnProyectil += crecimientoProbabilidad;
-    spawnProyectil(probabilidadSpawnProyectil);
-    
+    scoreDom.innerHTML = score;
+    comboDom.innerHTML = combo;
+    probabilidadSpawnProyectilActual += crecimientoProbabilidad;
+    spawnProyectil(probabilidadSpawnProyectilActual);
 }
-function areColliding(hitBoxA, hitBoxB){
-    return (!(hitBoxB.y1 > hitBoxA.y2) && !(hitBoxB.y2 < hitBoxA.y1) && !(hitBoxB.x1 > hitBoxA.x2) && !(hitBoxB.x2 < hitBoxA.x1));
-    /*if(!(hitBoxB.y1 > hitBoxA.y2) && !(hitBoxB.y2 < hitBoxA.y1)){
+
+
+//funcion creada para poder testear y ver las colisiones del juego
+function toggleHitboxes(){
+    document.querySelectorAll(".hitbox").forEach(hitbox=>{
+        hitbox.classList.toggle("ocultado");
+    })
+    verHitboxes = !verHitboxes;
+}
+function areColliding(hitboxNormal, hitBoxB){
+    return (!(hitBoxB.y1 > hitboxNormal.y2) && !(hitBoxB.y2 < hitboxNormal.y1) && !(hitBoxB.x1 > hitboxNormal.x2) && !(hitBoxB.x2 < hitboxNormal.x1));
+    /*if(!(hitBoxB.y1 > hitboxNormal.y2) && !(hitBoxB.y2 < hitboxNormal.y1)){
         //console.log("collideY");
     }
-    if(!(hitBoxB.x1 > hitBoxA.x2) && !(hitBoxB.x2 < hitBoxA.x1)){
+    if(!(hitBoxB.x1 > hitboxNormal.x2) && !(hitBoxB.x2 < hitboxNormal.x1)){
         //console.log("collideX");
     }*/
 }
@@ -233,22 +345,20 @@ function spawnProyectil(probabilidad){
         let velocidadX = Math.random()*6 + 3;
         let velocidadY = (Math.random() * (velocidadX/2)) - (velocidadX/4);
         for(let x = 0; x < proyectiles.length; x++){
-            if(proyectiles[x].isUsable()){
+            if(proyectiles[x].isReusable()){
                 proyectiles[x].reset(velocidadY, velocidadX);
                 return;
             }
         }
         let proyectilNuevo = document.createElement("div");
         proyectilNuevo.classList.add("proyectil");
-        let newProyectil = new Proyectil(proyectilNuevo, velocidadY, velocidadX);
+        let newProyectil = new Proyectil(proyectilNuevo, velocidadY, velocidadX, hitBoxProyectil);
         newProyectil.update();
         document.querySelector("#contenedorJuego").appendChild(proyectilNuevo);
         proyectiles.push(newProyectil);
     }
 }
 setInterval(tick, tickInterval);
-
-
 
 
 
