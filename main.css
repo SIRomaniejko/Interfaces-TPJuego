@@ -69,13 +69,13 @@
 }
 .saltando{
     background-size: 470px 130px !important;
-    background: url('images/characters/main/jumping.png') left center;
+    background: url('images/characters/main/salto2.png') left center;
     animation: jumpingFallingAnimation 0.5s steps(4);
     animation-fill-mode: forwards;
 }
 .cayendo{
     background-size: 470px 130px !important;
-    background: url('images/characters/main/falling.png') left center;
+    background: url('images/characters/main/fall2.png') left center;
     animation: jumpingFallingAnimation 2s steps(4);
     animation-fill-mode: forwards;
 }
