@@ -9,6 +9,35 @@
 </head>
 <body>
     <div id="contenedorJuego">
+        <div id="welcome">
+            <button id="comienzoJuego">comenzar</button>
+            <div>
+                <h1>Instrucciones</h1>
+                <p>En este juego se ganan puntos al cortar shurikens y haciendo combos, estos se logran al cortar varios shurikens sin tocar el suelo</p>
+                <div class="flexboxContainer">
+                    <div class="control">
+                        <img src="images/arrowdown.png" alt="">
+                        <div class="cayendo expositor"></div>
+                        <p>estando en el aire se <br>puede acelerar la caida</p>
+                    </div>
+                    <div class="control">
+                        <img src="images/keyup.png" alt="">
+                        <div class="saltando  expositor"></div>
+                        <p>este juego tiene doble salto<br>y al cortar un shuriken <br>se recupera un salto adicional</p>
+                    </div>
+                    <div class="control">
+                        <img src="images/spacebar.png" alt="">
+                        <div class="atacando expositor"></div>
+                        <p>cuando uno ataca hay un delay entre cada ataque a <br> menos que el ataque corte un shuriken <br> en ese caso se puede atacar de nuevo instantaneamente</p>
+                    </div>
+                    <div class="control">
+                        <img src="images/shuriken.png" alt="">
+                        <div class="muerto expositor"></div>
+                        <p>cuidado con los shurikens<br>si te golpean pierdes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="killcam" class="ocultado">
             <div>moriste, intentar de nuevo?</div>
             <button>Restart</button>

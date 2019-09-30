@@ -165,3 +165,49 @@
 #score{
     position: absolute;
 }
+
+#welcome{
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(128, 255, 0, 0.548);
+}
+.expositor{
+    height: 130px;
+    width: 94px;
+    margin: auto;
+}
+
+.flexboxContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+
+.flexboxContainer img{
+    display: block;
+    margin: auto;
+}
+
+#welcome h1{
+    text-align: center;
+}
+#welcome p{
+    text-align: center;
+}
+
+#welcome button{
+    background-color: white;
+    text-decoration: none;
+    border: none;
+    display: block;
+    margin: auto;
+    border-radius: 10px;
+    font-size: 2rem;
+    z-index: 2000;
+    margin-top: 1%;
+}

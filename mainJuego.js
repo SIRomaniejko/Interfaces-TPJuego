@@ -369,7 +369,7 @@ function spawnProyectil(probabilidad){
         proyectiles.push(newProyectil);
     }
 }
-setInterval(tick, tickInterval);
+
 
 function restartGame(){
     document.querySelector("#killcam").classList.add("ocultado");
@@ -384,3 +384,7 @@ function restartGame(){
 
 let a = document.querySelector("#killcam").querySelector("button").addEventListener("click", restartGame);
 
+document.querySelector("#comienzoJuego").addEventListener("click", ()=>{
+    document.querySelector("#welcome").classList.add("ocultado");
+    setInterval(tick, tickInterval);
+})
