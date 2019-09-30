@@ -84,7 +84,6 @@ class Protagonista{
         this.isAttackResetted = true;
     }
     update(){
-        
         if(!this.isAlive){
             this.getDomElement().classList.remove("atacando");
             this.getDomElement().classList.remove("corriendo");
@@ -93,7 +92,6 @@ class Protagonista{
             this.getDomElement().classList.add("muerto");
         }
         else{
-
             if(!this.isAttacking()){
                 this.getDomElement().classList.remove("atacando");
             }
@@ -139,9 +137,16 @@ class Protagonista{
                 y2: this.altura + selectedHitbox.y1 + selectedHitbox.y2
         }
     }
-
     die(){
         this.isAlive = false;
+    }
+    revive(){
+        this.isAlive = true;
+        this.getDomElement().classList.add("corriendo");
+        this.getDomElement().classList.remove("muerto");
+    }
+    isDead(){
+        return !this.isAlive;
     }
 }
 class Proyectil{
@@ -298,26 +303,32 @@ function tick(){
     spaceKey = false;
 
     let hitBoxMain = main.getHitbox();
-    proyectiles.forEach(proyectil =>{
-        if(proyectil.isAlive() && !proyectil.isReusable()){
-            let hitBoxProyectil = proyectil.getHitbox();
-            if(areColliding(hitBoxMain, hitBoxProyectil)){
-                if(main.isAttacking()){
-                    console.log("cut");
-                    proyectil.destroyProyectile();
-                    main.attackReset();
-                    main.setDoubleJump(false);
-                    score += puntosDestruccion * ++combo;
-                }
-                else{
-                    proyectil.destroyProyectile();
-                    main.die();
+    if(!main.isDead()){
+        proyectiles.forEach(proyectil =>{
+            if(proyectil.isAlive() && !proyectil.isReusable()){
+                let hitBoxProyectil = proyectil.getHitbox();
+                if(areColliding(hitBoxMain, hitBoxProyectil)){
+                    if(main.isAttacking()){
+                        console.log("cut");
+                        proyectil.destroyProyectile();
+                        main.attackReset();
+                        main.setDoubleJump(false);
+                        score += puntosDestruccion * ++combo;
+                    }
+                    else{
+                        proyectil.destroyProyectile();
+                        main.die();
+                        document.querySelector("#killcam").classList.remove("ocultado");
+                    }
                 }
             }
-        }
-    })
+        })
+    }
+    else{
+        console.log("lmao urdedxDdDd");
+    }
     scoreDom.innerHTML = score;
-    comboDom.innerHTML = combo;
+    comboDom.innerHTML = "x"+ combo;
     probabilidadSpawnProyectilActual += crecimientoProbabilidad;
     spawnProyectil(probabilidadSpawnProyectilActual);
 }
@@ -360,6 +371,16 @@ function spawnProyectil(probabilidad){
 }
 setInterval(tick, tickInterval);
 
+function restartGame(){
+    document.querySelector("#killcam").classList.add("ocultado");
+    probabilidadSpawnProyectilActual = probabilidadSpawnProyectil;
+    proyectiles.forEach(proyectil=>{
+        proyectil.destroyProyectile();
+    })
+    main.revive();
+    score = 0;
+}
 
 
+let a = document.querySelector("#killcam").querySelector("button").addEventListener("click", restartGame);
 

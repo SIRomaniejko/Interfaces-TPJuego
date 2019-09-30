@@ -3,8 +3,9 @@
     width: 100%;
     background-color: aqua;
     position: relative;
-    z-index: -1000;
+    z-index: 0;
     overflow: hidden;
+    pointer-events: all;
 }
 #nubes{
     position: absolute;
@@ -131,4 +132,36 @@
     100%{
         transform: translate(-200px, 50px);
     }
+}
+
+
+#killcam{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 255, 0.5);
+    z-index: 1000;
+    font-size: 2rem;
+    pointer-events: visible;
+}
+
+#killcam div{
+    margin: 10% auto;
+    text-align: center;
+}
+
+#killcam button{
+    background-color: white;
+    text-decoration: none;
+    border: none;
+    display: block;
+    margin: auto;
+    border-radius: 10px;
+    font-size: 2rem;
+    z-index: 2000;
+}
+
+#score{
+    position: absolute;
 }
